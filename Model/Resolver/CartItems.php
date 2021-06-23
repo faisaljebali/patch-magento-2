@@ -30,6 +30,7 @@ class CartItems implements ResolverInterface
 
     /** @var Uid */
     private $uidEncoder;
+    protected $_productRepositoryFactory;
 
     /**
      * @param GetCartProducts $getCartProducts
@@ -37,10 +38,13 @@ class CartItems implements ResolverInterface
      */
     public function __construct(
         GetCartProducts $getCartProducts,
-        Uid $uidEncoder
+        Uid $uidEncoder,
+        \Magento\Catalog\Api\ProductRepositoryInterfaceFactory $productRepositoryFactory
+
     ) {
         $this->getCartProducts = $getCartProducts;
         $this->uidEncoder = $uidEncoder;
+        $this->_productRepositoryFactory = $productRepositoryFactory;
     }
 
     /**
@@ -66,6 +70,8 @@ class CartItems implements ResolverInterface
         /** @var QuoteItem $cartItem */
         foreach ($cartItems as $cartItem) {
             $productId = $cartItem->getProduct()->getId();
+            $sku = $cartItem->getSku();
+            $product = $this->_productRepositoryFactory->create()->get($sku);
             if (!isset($cartProductsData[$productId])) {
                 $itemsData[] = new GraphQlNoSuchEntityException(
                     __("The product that was requested doesn't exist. Verify the product and try again.")
@@ -73,12 +79,13 @@ class CartItems implements ResolverInterface
                 continue;
             }
             $productData = $cartProductsData[$productId];
-
+            $image = $product->getData('image');
             $itemsData[] = [
                 'id' => $cartItem->getItemId(),
                 'uid' => $this->uidEncoder->encode((string) $cartItem->getItemId()),
                 'quantity' => $cartItem->getQty(),
                 'product' => $productData,
+                'image' => $image,
                 'model' => $cartItem,
             ];
         }

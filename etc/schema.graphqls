@@ -335,6 +335,7 @@ interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\
     quantity: Float!
     prices: CartItemPrices @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
     product: ProductInterface!
+    image : String!
 }
 
 type Discount @doc(description:"Defines an individual discount. A discount can be applied to the cart as a whole or to an item.") {
