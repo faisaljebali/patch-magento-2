@@ -85,8 +85,8 @@ class CartItems implements ResolverInterface
                 'uid' => $this->uidEncoder->encode((string) $cartItem->getItemId()),
                 'quantity' => $cartItem->getQty(),
                 'product' => $productData,
-                'image' => $image,
                 'model' => $cartItem,
+                'image' => $image,
             ];
         }
         return $itemsData;
